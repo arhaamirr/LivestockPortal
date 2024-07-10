@@ -1,6 +1,5 @@
 import FeedingRoutine from '../models/feedingRoutineModel.mjs';
 
-// Controller functions
 export const createFeedingRoutine = async (req, res) => {
     try {
         const feedingRoutine = new FeedingRoutine(req.body);

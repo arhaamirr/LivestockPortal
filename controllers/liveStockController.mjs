@@ -1,6 +1,5 @@
 import Livestock from '../models/livestockModel.mjs';
 
-// Controller functions
 export const createLivestock = async (req, res) => {
     try {
         const livestock = new Livestock(req.body);
@@ -13,7 +12,8 @@ export const createLivestock = async (req, res) => {
 
 export const getAllLivestock = async (req, res) => {
     try {
-        const livestock = await Livestock.find().populate('owner_id shelter_id');
+        const ownerId = req.query.ownerId;
+        const livestock = await Livestock.find({ owner_id: ownerId }).populate('owner_id shelter_id');
         res.status(200).json(livestock);
     } catch (error) {
         res.status(400).json({ error: error.message });
