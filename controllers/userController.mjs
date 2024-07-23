@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 export const registerUser = async (req, res) => {
+  console.log("registerrrr")
   const { name, email, password, phone } = req.body;
 
   try {
