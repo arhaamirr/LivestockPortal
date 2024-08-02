@@ -28,11 +28,10 @@ mongoose
   });
 
 app.use(express.json());
-app.use("/users", authMiddleware);
 app.use("/feeding-routines", feedingRoutineRoutes);
-app.use("/livestock", livestockRoutes);
-app.use("/purchases", purchaseRoutes);
-app.use("/sales", saleRoutes);
+app.use("/livestock", authMiddleware, livestockRoutes);
+app.use("/purchases", authMiddleware, purchaseRoutes);
+app.use("/sales", authMiddleware, saleRoutes);
 app.use("/shelters", shelterRoutes);
 app.use("/users", userRoutes);
 app.use("/housing-requirements", housingRequirementRoutes);
