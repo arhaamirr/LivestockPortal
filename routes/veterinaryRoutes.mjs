@@ -6,7 +6,7 @@ import {
 
 const router = express.Router();
 
-router.post('/appointments', createAppointment);
-router.get('/all-appointments', getAllAppointments);
+router.post('/createAppointment', createAppointment);
+router.get('/allAppointments', getAllAppointments);
 
 export default router;

@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
     phone: {
         type: String
     },
+    role: {
+        type: String,
+        // default: 'customer'
+         default: 'admin'
+    },
     created_at: {
         type: Date,
         default: Date.now
