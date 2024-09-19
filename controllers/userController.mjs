@@ -47,3 +47,21 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+
+export const getUsersList = async (req, res) => {
+
+  try {
+    const user = await User.findOne({ email });
+  
+    if (!user || await bcrypt.compare(password, user.password)) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '30m' });
+    res.status(200).json({ token, user: { name: user.name, email: user.email, id: user._id, phone: user.phone } });
+  } catch (error) {
+    console.error('Error during login:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+};

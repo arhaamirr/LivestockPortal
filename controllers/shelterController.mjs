@@ -1,4 +1,5 @@
 import Shelter from '../models/shelterModel.mjs';
+import mongoose from 'mongoose';
 
 export const createShelter = async (req, res) => {
     try {
@@ -11,10 +12,20 @@ export const createShelter = async (req, res) => {
 };
 
 export const getAllShelters = async (req, res) => {
+    console.log("Dgfdg")
     try {
-        const shelters = await Shelter.find().populate('user_id');
-        res.status(200).json(shelters);
+
+        // Query for shelters
+        const shelters = await Shelter.find({ user_id: ObjectId('64aef0f1f8e1a2b8e9a1f1e0') });
+        console.log("Found shelters:", shelters);
+
+        if (!shelters || shelters.length === 0) {
+            return res.status(404).json({ message: 'Shelters not found' });
+        }
+
+        res.status(200).json({ records: shelters });
     } catch (error) {
+        console.log(error,"errorerror")
         res.status(400).json({ error: error.message });
     }
 };
@@ -51,6 +62,25 @@ export const deleteShelter = async (req, res) => {
         }
         res.status(200).json({ message: 'Shelter deleted' });
     } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const getSheltersListAgainstId = async (req, res) => {
+    return 123;
+    console.log("DSfdsf")
+    try {
+        const userId = '64aef0f1f8e1a2b8e9a1f1e0';
+
+        // Convert the string to an ObjectId
+        const objectId = mongoose.Types.ObjectId(userId);
+        const shelter = await Shelter.find({user_id : objectId});
+        if (!shelter) {
+            return res.status(404).json({ message: 'Shelter not found' });
+        }
+        res.status(200).json({ records: shelter });
+    } catch (error) {
+        console.log(error,"errorerror")
         res.status(400).json({ error: error.message });
     }
 };
