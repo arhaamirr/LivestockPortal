@@ -30,7 +30,7 @@ mongoose
 
 app.use(express.json());
 app.use("/feeding-routines", feedingRoutineRoutes);
-app.use("/livestock", authMiddleware, livestockRoutes);
+app.use("/livestock", livestockRoutes);
 app.use("/purchases", authMiddleware, purchaseRoutes);
 app.use("/sales", authMiddleware, saleRoutes);
 app.use("/shelters", shelterRoutes);

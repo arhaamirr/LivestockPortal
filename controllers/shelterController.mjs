@@ -12,11 +12,10 @@ export const createShelter = async (req, res) => {
 };
 
 export const getAllShelters = async (req, res) => {
-    console.log("Dgfdg")
     try {
-
         // Query for shelters
-        const shelters = await Shelter.find({ user_id: ObjectId('64aef0f1f8e1a2b8e9a1f1e0') });
+        // const shelters = await Shelter.find({ user_id: ObjectId('64aef0f1f8e1a2b8e9a1f1e0') });
+        const shelters = await Shelter.find({});
         console.log("Found shelters:", shelters);
 
         if (!shelters || shelters.length === 0) {
@@ -67,8 +66,6 @@ export const deleteShelter = async (req, res) => {
 };
 
 export const getSheltersListAgainstId = async (req, res) => {
-    return 123;
-    console.log("DSfdsf")
     try {
         const userId = '64aef0f1f8e1a2b8e9a1f1e0';
 
