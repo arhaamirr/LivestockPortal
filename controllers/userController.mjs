@@ -3,12 +3,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 export const registerUser = async (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone, role } = req.body;
 
   try {
     let existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(201).json({ message: 'User already exists' });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -19,11 +19,12 @@ export const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       phone,
+      role
     });
 
     await user.save();
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '30m' });
-    res.status(201).json({ token });
+    res.status(200).json({token});
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: 'Server error' });
@@ -31,13 +32,13 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email, role: role });
   
     if (!user || await bcrypt.compare(password, user.password)) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(201).json({ message: 'Invalid credentials' });
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '30m' });

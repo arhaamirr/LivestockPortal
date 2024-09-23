@@ -33,7 +33,6 @@ export const getFeedingRoutineById = async (req, res) => {
 
 export const getFeedingRoutineByLivestockId = async (req, res) => {
     try {
-        console.log(req.params.id, "id")
         const feedingRoutine = await FeedingRoutine.find({livestock_id: req.params.id}).populate('livestock_id');
         if (!feedingRoutine) {
             return res.status(404).json({ message: 'Feeding routine not found' });

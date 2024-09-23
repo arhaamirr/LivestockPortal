@@ -16,13 +16,10 @@ export const getAllShelters = async (req, res) => {
         // Query for shelters
         // const shelters = await Shelter.find({ user_id: ObjectId('64aef0f1f8e1a2b8e9a1f1e0') });
         const shelters = await Shelter.find({});
-        console.log("Found shelters:", shelters);
-
         if (!shelters || shelters.length === 0) {
             return res.status(404).json({ message: 'Shelters not found' });
         }
-
-        res.status(200).json({ records: shelters });
+        res.status(200).json( shelters );
     } catch (error) {
         console.log(error,"errorerror")
         res.status(400).json({ error: error.message });

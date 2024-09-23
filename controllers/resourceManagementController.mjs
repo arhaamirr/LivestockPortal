@@ -2,16 +2,23 @@ import ResourceManagment from '../models/resourceManagementModel.mjs';
 
 export const addResource = async (req, res) => {
     try {
-        console.log(req.body,"resource in backend req.body")
-        const ressource = new ResourceManagment(req.body);
-       
-        await ressource.save();
-        res.status(201).json(ressource);
+        const resource = new ResourceManagment(req.body);
+        await resource.save();
+        res.status(201).json(resource);
     } catch (error) {
-        console.log(error.message ,"error.message error.message ")
+        console.log(error.message, "error")
         res.status(400).json({ error: error.message });
     }
 };
+
+export const getAllResources = async (req, res) => {
+    try {
+        const resource = await ResourceManagment.find({}).populate("land_id");
+        res.status(201).json(resource);
+    } catch (error) {
+        res.status(400).json({error: error.message});
+    }
+}
 
 // export const getAllPurchases = async (req, res) => {
 //     try {
