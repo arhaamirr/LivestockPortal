@@ -6,6 +6,11 @@ const feedingRoutineSchema = new mongoose.Schema({
         ref: 'Livestock',
         required: true
     },
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     feeding_time: {
         type: Date,
         required: true

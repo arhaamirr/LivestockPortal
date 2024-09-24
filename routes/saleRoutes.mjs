@@ -1,5 +1,5 @@
 import express from 'express';
-import { createSale, getAllSales, getSaleById, updateSale, deleteSale } from '../controllers/saleController.mjs';
+import { createSale, getAllSales, getSaleById, updateSale, deleteSale,  } from '../controllers/saleController.mjs';
 
 const router = express.Router();
 

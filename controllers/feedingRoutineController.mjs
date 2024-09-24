@@ -31,6 +31,18 @@ export const getFeedingRoutineById = async (req, res) => {
     }
 };
 
+export const getFeedingRoutineByLivestockId = async (req, res) => {
+    try {
+        const feedingRoutine = await FeedingRoutine.find({livestock_id: req.params.id}).populate('livestock_id');
+        if (!feedingRoutine) {
+            return res.status(404).json({ message: 'Feeding routine not found' });
+        }
+        res.status(200).json(feedingRoutine);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 export const updateFeedingRoutine = async (req, res) => {
     try {
         const feedingRoutine = await FeedingRoutine.findByIdAndUpdate(req.params.id, req.body, { new: true });
