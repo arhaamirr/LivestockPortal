@@ -36,11 +36,14 @@ export const loginUser = async (req, res) => {
 
   try {
     const user = await User.findOne({ email: email, role: role });
-    const response = await bcrypt.compare(password, user.password);
-    if (!user || !response) {
+    if (!user) {
       return res.status(201).json({ message: 'Invalid credentials' });
     }
-
+    const response = await bcrypt.compare(password, user?.password);
+    
+    if(!response) {
+      return res.status(201).json({ message: 'Invalid credentials' });
+    }
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '30m' });
     res.status(200).json({ token, user: { name: user.name, email: user.email, id: user._id }, role });
   } catch (error) {
@@ -98,7 +101,6 @@ export const updateUser = async (req, res) => {
         res.status(201).json({message: "Passwords don't match"});
       }
       const user = await User.findOne({ email: email, role: selectedRole })
-      console.log(user,"user")
       if(user) {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -119,6 +121,36 @@ export const updateUser = async (req, res) => {
       }
     }
     catch {
+      res.status(201).json({message: "Error updating password"});
+    }
+  }
 
+  export const getAllUsers = async (req, res) => {
+    const { role } = req.params;
+    try {
+      const user = await User.find({role: role}).select("name email created_at");
+      if(user) {
+        res.status(200).json({user});
+      }
+      else {
+        res.status(201).json({message: "Data does not exist"});
+      }
+    } catch (error) {
+      console.error('Error during fetching:', error.message);
+      res.status(500).json({ error: 'Server error' });
+    }
+  };
+
+  export const deleteUser = async (req, res) => {
+    const {id} = req.params;
+    try {
+      const user = await User.findByIdAndDelete(id);
+      if (user) {
+          res.status(200).json({ message: 'User deleted successfully' });
+      } else {
+          res.status(404).json({ message: 'User not found' });
+      }
+    } catch(error) {
+        res.status(500).json({ error: 'Server error' });
     }
   }

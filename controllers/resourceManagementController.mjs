@@ -20,6 +20,31 @@ export const getAllResources = async (req, res) => {
     }
 }
 
+export const getResourceById = async (req, res) => {
+    console.log(req.params.id,"req.params.idreq.params.idreq.params.id")
+    try {
+        const resource = await ResourceManagment.findById(req.params.id).populate('land_id');
+        if (!resource) {
+            return res.status(404).json({ message: 'resource not found' });
+        }
+        res.status(200).json(resource);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const updateResource = async (req, res) => {
+    try {
+        const resourceManagment = await ResourceManagment.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!resourceManagment) {
+            return res.status(404).json({ message: 'resourceManagment not found' });
+        }
+        res.status(200).json(resourceManagment);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // export const getAllPurchases = async (req, res) => {
 //     try {
 //         const purchases = await Purchase.find().populate('livestock_id buyer_id');
