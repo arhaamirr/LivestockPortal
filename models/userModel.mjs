@@ -16,6 +16,21 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    address1: {
+        type: String,
+        required: false,
+        default: null
+    },
+    address2: {
+        type: String,
+        required: false,
+        default: null
+    },
+    postcode: {
+        type: String,
+        required: false,
+        default: null
+    },
     phone: {
         type: String
     },
@@ -28,15 +43,6 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
-});
-
-userSchema.pre('save', async function(next) {
-    const user = this;
-    if (user.isModified('password')) {
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(user.password, salt);
-    }
-    next();
 });
 
 userSchema.methods.generateAuthToken = function() {

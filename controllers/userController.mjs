@@ -10,10 +10,10 @@ export const registerUser = async (req, res) => {
     if (existingUser) {
       return res.status(201).json({ message: 'User already exists' });
     }
+    else {
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
+    const hashedPassword = await bcrypt.hash(password.toString(), salt);
     const user = new User({
       name,
       email,
@@ -21,10 +21,10 @@ export const registerUser = async (req, res) => {
       phone,
       role
     });
-
     await user.save();
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '30m' });
     res.status(200).json({token});
+  }
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: 'Server error' });
@@ -36,33 +36,89 @@ export const loginUser = async (req, res) => {
 
   try {
     const user = await User.findOne({ email: email, role: role });
-  
-    if (!user || await bcrypt.compare(password, user.password)) {
+    const response = await bcrypt.compare(password, user.password);
+    if (!user || !response) {
       return res.status(201).json({ message: 'Invalid credentials' });
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '30m' });
-    res.status(200).json({ token, user: { name: user.name, email: user.email, id: user._id, phone: user.phone }, role });
+    res.status(200).json({ token, user: { name: user.name, email: user.email, id: user._id }, role });
   } catch (error) {
     console.error('Error during login:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 };
-
 
 export const getUsersList = async (req, res) => {
-
+  const { email, role } = req.params;
   try {
-    const user = await User.findOne({ email });
-  
-    if (!user || await bcrypt.compare(password, user.password)) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+    const user = await User.findOne({ email: email, role: role }).select('-password');
+    if(user) {
+      res.status(200).json({user});
     }
-
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '30m' });
-    res.status(200).json({ token, user: { name: user.name, email: user.email, id: user._id, phone: user.phone } });
+    else {
+      res.status(201).json({message: "User does not exist"});
+    }
   } catch (error) {
     console.error('Error during login:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+export const updateUser = async (req, res) => {
+  const { phone, address1, address2, name, postcode, email, role } = req.body;
+  try {
+    const user = await User.findOne({ email: email, role: role });
+    if(user) {
+      const filter = { _id: user._id }; // E.g., search by _id
+      const update = {
+        $set: { name: name, address1: address1, address2: address2, postcode: postcode, phone: phone }  // Fields you want to update
+      };
+      const result = await User.updateOne(filter, update);
+      if(result.matchedCount == 1) {
+        res.status(200).json({message: "Profile updated successfully", name: name, email: email, updated: 1});
+      }
+      else {
+        res.status(201).json({message: "Error updating profile", updated: 0});
+      }
+    }
+    else {
+      res.status(201).json({message: "User does not exist"});
+    }
+  } catch (error) {
+    console.error('Error during login:', error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+  export const updatePassword = async (req, res) => {
+    const {email, password, confirmPassword, selectedRole} = req.body;
+    try {
+      if(password != confirmPassword) {
+        res.status(201).json({message: "Passwords don't match"});
+      }
+      const user = await User.findOne({ email: email, role: selectedRole })
+      console.log(user,"user")
+      if(user) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const filter = { _id: user._id };
+        const update = {
+          $set: { password: hashedPassword }
+        };
+        const result = await User.updateOne(filter, update);
+        if(result.matchedCount == 1) {
+          res.status(200).json({message: "Password updated successfully", email: email, updated: 1});
+        }
+        else {
+          res.status(201).json({message: "Error updating password", updated: 0});
+        }
+      }
+      else {
+        res.status(201).json({message: "User does not exist"});
+      }
+    }
+    catch {
+
+    }
+  }
