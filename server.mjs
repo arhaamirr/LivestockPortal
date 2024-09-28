@@ -13,6 +13,7 @@ import authMiddleware from "./middleware/authMiddleware.mjs";
 import housingRequirementRoutes from "./routes/housingRequirementRoutes.mjs";
 import veterinaryRoutes from "./routes/veterinaryRoutes.mjs";
 import resourceManagementRoutes from "./routes/resourceManagementRoutes.mjs";
+import doctorTimeslotRateRoutes from "./routes/doctorTimeslotRateRoutes.mjs"
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/users", userRoutes);
 app.use("/housing-requirements", housingRequirementRoutes);
 app.use("/appointment", veterinaryRoutes);
 app.use("/resource", resourceManagementRoutes);
+app.use("/doctor", doctorTimeslotRateRoutes);
 const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

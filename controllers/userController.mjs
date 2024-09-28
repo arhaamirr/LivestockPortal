@@ -128,7 +128,7 @@ export const updateUser = async (req, res) => {
   export const getAllUsers = async (req, res) => {
     const { role } = req.params;
     try {
-      const user = await User.find({role: role}).select("name email created_at");
+      const user = await User.find({role: role}).select("name email created_at phone");
       if(user) {
         res.status(200).json({user});
       }
@@ -154,3 +154,28 @@ export const updateUser = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
   }
+
+  export const getAllUsersCountByRoles = async (req, res) => {
+    try {
+      const rolesCount = await User.aggregate([
+        {
+          $match: { role: { $in: ["admin", "user", "doctor"] } }
+        },
+        {
+          $group: {
+            _id: "$role",
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+  
+      if (rolesCount.length > 0) {
+        res.status(200).json({ rolesCount });
+      } else {
+        res.status(201).json({ message: "No data found for the specified roles" });
+      }
+    } catch (error) {
+      console.error('Error during fetching:', error.message);
+      res.status(500).json({ error: 'Server error' });
+    }
+  };
