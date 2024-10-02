@@ -15,6 +15,7 @@ import veterinaryRoutes from "./routes/veterinaryRoutes.mjs";
 import resourceManagementRoutes from "./routes/resourceManagementRoutes.mjs";
 import doctorTimeslotRateRoutes from "./routes/doctorTimeslotRateRoutes.mjs"
 import shelterSpaceRoutes from "./routes/shelterSpaceRoutes.mjs"
+import userPurchase from "./routes/userPurchase.mjs"
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use("/appointment", veterinaryRoutes);
 app.use("/resource", resourceManagementRoutes);
 app.use("/doctor", doctorTimeslotRateRoutes);
 app.use("/shelter-space", shelterSpaceRoutes);
+app.use("/user-purchase", userPurchase);
 const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
