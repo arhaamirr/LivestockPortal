@@ -69,7 +69,7 @@ export const getUsersList = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  const { phone, address1, address2, name, postcode, email, role } = req.body;
+  const { phone, address1, address2, name, postcode, email, role, id } = req.body;
   try {
     const user = await User.findOne({ email: email, role: role });
     if(user) {
@@ -79,7 +79,7 @@ export const updateUser = async (req, res) => {
       };
       const result = await User.updateOne(filter, update);
       if(result.matchedCount == 1) {
-        res.status(200).json({message: "Profile updated successfully", name: name, email: email, updated: 1});
+        res.status(200).json({message: "Profile updated successfully", name: name, email: email, id: id, updated: 1});
       }
       else {
         res.status(201).json({message: "Error updating profile", updated: 0});
@@ -110,7 +110,7 @@ export const updateUser = async (req, res) => {
         };
         const result = await User.updateOne(filter, update);
         if(result.matchedCount == 1) {
-          res.status(200).json({message: "Password updated successfully", email: email, updated: 1});
+          res.status(200).json({message: "Password updated successfully", email: email, id: filter._id, updated: 1});
         }
         else {
           res.status(201).json({message: "Error updating password", updated: 0});

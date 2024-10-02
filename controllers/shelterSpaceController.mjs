@@ -1,4 +1,5 @@
 import ShelterSpace from '../models/shelterSpace.mjs';
+import UserPurchase from '../models/userPurchase.mjs';
 
 export const addShelterSpace = async (req, res) => {
     try {
@@ -14,7 +15,17 @@ export const addShelterSpace = async (req, res) => {
 export const getAllShelterSpace = async (req, res) => {
     try {
         const resource = await ShelterSpace.find({}).populate("livestock_id");
-        res.status(201).json(resource);
+        const updatedShelterSpaces = await Promise.all(resource.map(async (space) => {
+            const purchase = await UserPurchase.findOne({ shelterspace_id: space._id });
+
+            const updatedSpace = {
+                ...space.toObject(),
+                purchased: purchase ? 1 : 0
+            };
+
+            return updatedSpace;
+        }));
+        res.status(201).json(updatedShelterSpaces);
     } catch (error) {
         res.status(400).json({error: error.message});
     }
