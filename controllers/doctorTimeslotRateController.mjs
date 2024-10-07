@@ -1,46 +1,45 @@
-import DoctorTimeslotRate from '../models/doctorTimeslotRate.mjs';
+import DoctorTimeslotRate from "../models/doctorTimeslotRate.mjs"
+import mongoose from "mongoose";
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+  
+    // Format the day, month, and year
+    const day = date.getUTCDate();
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getUTCFullYear();
+  
+    // Format the time
+    const time = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // for AM/PM format
+    });
+  
+    return `${day}, ${month}, ${year} ${time}`;
+};
 
 export const createDoctorTimeslot = async (req, res) => {
-    const { doctor_id, start_time, end_time, rate } = req.body;
+    const { doctor_id, start_time, end_time, fee } = req.body;
 
     try {
         // Validate required fields
-        if (!doctor_id || !start_time || !end_time || rate === undefined) {
-            return res.status(400).json({ message: 'All fields are required' });
+        if (!doctor_id || !start_time || !end_time || fee === undefined) {
+            return res.status(201).json({ message: 'All fields are required', inserted: 0 });
         }
 
         // Check if start_time is before end_time
         if (new Date(start_time) >= new Date(end_time)) {
-            return res.status(400).json({ message: 'Start time must be before end time' });
+            return res.status(201).json({ message: 'Start time must be before end time', inserted: 0 });
         }
 
         // Check for overlapping time slots
         const existingTimeslot = await DoctorTimeslotRate.findOne({
-            doctor_id,
-            $or: [
-                {
-                    start_time: { $lt: new Date(end_time) }, 
-                    end_time: { $gt: new Date(start_time) } 
-                }
-            ]
+            doctor_id, start_time: new Date(start_time)
         });
 
         if (existingTimeslot) {
-            // Allow partial overlap but not full overlap
-            const newStartTime = new Date(start_time);
-            const newEndTime = new Date(end_time);
-            const existingStartTime = existingTimeslot.start_time;
-            const existingEndTime = existingTimeslot.end_time;
-
-            // Check if new slot is fully contained within the existing slot
-            if (
-                (newStartTime >= existingStartTime && newEndTime <= existingEndTime) || // Fully inside
-                (newStartTime <= existingStartTime && newEndTime >= existingEndTime) || // Fully overlaps
-                (newStartTime <= existingStartTime && newEndTime <= existingEndTime) || // Starts before and ends inside
-                (newStartTime >= existingStartTime && newEndTime >= existingEndTime) // Starts inside and ends after
-            ) {
-                return res.status(400).json({ message: 'Timeslot overlaps with an existing timeslot' });
-            }
+            return res.status(201).json({ message: 'Timeslot overlaps with an existing timeslot', inserted: 0 });
         }
 
         // Create new timeslot and rate
@@ -48,13 +47,105 @@ export const createDoctorTimeslot = async (req, res) => {
             doctor_id,
             start_time,
             end_time,
-            rate
+            fee,
+            booked: 0
         });
 
         await newTimeslot.save();
-        res.status(201).json({ message: 'Doctor timeslot created successfully', data: newTimeslot });
+        res.status(200).json({ message: 'Doctor timeslot created successfully', data: newTimeslot, inserted: 1 });
     } catch (error) {
         console.error('Error creating doctor timeslot:', error);
-        res.status(500).json({ error: 'Server error', details: error.message });
+        res.status(201).json({ error: 'Server error', message: error.message, inserted: 0 });
     }
 };
+
+export const getDoctorTimeslot = async (req, res) => {
+    const { doctor_id } = req.params;
+    try {
+        const slots = await DoctorTimeslotRate.find({ doctor_id: doctor_id });
+        if (slots) {
+            res.status(200).json({ message: "Timeslot exists", slots: slots });
+        } else {
+            res.status(201).json({ message: "Timeslots don't exist" });
+        }
+    } catch (error) {
+        res.status(201).json({ message: "Timeslots don't exist" });
+    }
+}
+
+export const deleteDoctorSlot = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deleted = await DoctorTimeslotRate.deleteOne({ _id: new mongoose.Types.ObjectId(id) });
+        if (deleted.deletedCount == 1) {
+            res.status(200).json({ message: "Slot deleted successfully", deleted: 1 })
+        }
+        else {
+            res.status(201).json({ message: "Error deleting slot", deleted: 0 });
+        }
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something wrong occurred" });
+        console.log(error, "error")
+    }
+}
+
+export const getAllTimeslots = async (req, res) => {
+    try {
+        const response = await DoctorTimeslotRate.find({}).populate("doctor_id");
+        if (response) {
+            res.status(200).json({ message: "Timeslots fetched successfully", data: response });
+        } else {
+            res.status(201).json({ message: "No timeslots found" });
+        }
+    } catch (error) {
+        res.status(201).json({ message: "Error fetching timeslots" });
+    }
+}
+
+export const getBookedTimeslots = async (req, res) => {
+    const { doctor_id } = req.params;
+    try {
+        const response = await DoctorTimeslotRate.find({doctor_id: doctor_id, booked: 1});
+        if (response) {
+            res.status(200).json({ message: "Booked Timeslots fetched successfully", data: response });
+        } else {
+            res.status(201).json({ message: "No Booked timeslots found" });
+        }
+    } catch (error) {
+        res.status(201).json({ message: "Error fetching booked timeslots" });
+    }
+}
+
+export const bookAppointment = async (req, res) => {
+    const { user_id, description, timeslot_id } = req.body;
+    try {
+        const response = await DoctorTimeslotRate.findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(timeslot_id), booked: 0 }, // Filter
+            { $set: { booked: 1, description: description, bookedBy: user_id } }, // Update
+            { new: true }
+          );
+
+        if (response) {
+            res.status(200).json({ message: "Appointment booked successfully", data: response, updated: 1 });
+        } else {
+            res.status(201).json({ message: "Timeslot not available", updated: 0 });
+        }
+    } catch (error) {
+        res.status(201).json({ message: "Error booking Appointments", updated: 0 });
+    }
+}
+
+export const getBookedTimeslotsUser = async (req, res) => {
+    const { user_id } = req.params;
+    try {
+        const response = await DoctorTimeslotRate.find({bookedBy: user_id, booked: 1}).populate("doctor_id").sort({ start_time: 1});
+        if (response) {
+            res.status(200).json({ message: "Booked Timeslots fetched successfully", data: response });
+        } else {
+            res.status(201).json({ message: "No Booked timeslots found" });
+        }
+    } catch (error) {
+        res.status(201).json({ message: "Error fetching booked timeslots" });
+    }
+}

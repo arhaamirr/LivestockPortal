@@ -14,12 +14,24 @@ const doctorTimeslotRateSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-   rate: {
+   fee: {
         type: Number,
         required: true
+   },
+   description: {
+        type: String,
+        default: null   
+   },
+   booked: {
+        type:  Number, 
+        default: 0
+   },
+   bookedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
    }
 });
 
-const FeedingRoutine = mongoose.model('doctorTimeslotRate', doctorTimeslotRateSchema);
+const DoctorTimeSlotRates = mongoose.model('doctortimeslotrates', doctorTimeslotRateSchema);
 
-export default FeedingRoutine;
+export default DoctorTimeSlotRates;
