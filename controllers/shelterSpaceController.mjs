@@ -1,5 +1,6 @@
 import ShelterSpace from '../models/shelterSpace.mjs';
 import UserPurchase from '../models/userPurchase.mjs';
+import mongoose from 'mongoose';
 
 export const addShelterSpace = async (req, res) => {
     try {
@@ -13,10 +14,11 @@ export const addShelterSpace = async (req, res) => {
 };
 
 export const getAllShelterSpace = async (req, res) => {
+    const {id} =req.params;
     try {
         const resource = await ShelterSpace.find({}).populate("livestock_id");
         const updatedShelterSpaces = await Promise.all(resource.map(async (space) => {
-            const purchase = await UserPurchase.findOne({ shelterspace_id: space._id });
+            const purchase = await UserPurchase.findOne({ shelterspace_id: space._id, user_id: new mongoose.Types.ObjectId(id) });
 
             const updatedSpace = {
                 ...space.toObject(),
