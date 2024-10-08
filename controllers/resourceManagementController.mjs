@@ -45,6 +45,18 @@ export const updateResource = async (req, res) => {
     }
 };
 
+export const deleteResource = async (req, res) => {
+    try {
+        const resource = await ResourceManagment.findByIdAndDelete(req.params.id);
+        if (!resource) {
+            return res.status(404).json({ message: 'Resource not found', deleted: 0 });
+        }
+        res.status(200).json({ message: 'Resource deleted', deleted: 1 });
+    } catch (error) {
+        res.status(400).json({ error: error.message, deleted: 0 });
+    }
+};
+
 // export const getAllPurchases = async (req, res) => {
 //     try {
 //         const purchases = await Purchase.find().populate('livestock_id buyer_id');

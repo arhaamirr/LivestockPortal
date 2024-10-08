@@ -24,7 +24,7 @@ export const getUserPurchasedItems = async (req, res) => {
 export const purchaseItem = async (req, res) => {
     const { user_id, shelter_id } = req.body;
     try {
-        const purchaseItem = await UserPurchase.find({shelterspace_id: shelter_id});
+        const purchaseItem = await UserPurchase.find({shelterspace_id: shelter_id, user_id: user_id});
         if(purchaseItem?.length > 0) {
             res.status(200).json({message: "Item already purchased", purchased: 0});
             return;
