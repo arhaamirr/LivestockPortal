@@ -59,10 +59,10 @@ export const deleteFeedingRoutine = async (req, res) => {
     try {
         const feedingRoutine = await FeedingRoutine.findByIdAndDelete(req.params.id);
         if (!feedingRoutine) {
-            return res.status(404).json({ message: 'Feeding routine not found' });
+            return res.status(404).json({ message: 'Feeding routine not found', deleted: 0 });
         }
-        res.status(200).json({ message: 'Feeding routine deleted' });
+        res.status(200).json({ message: 'Feeding routine deleted', deleted: 1 });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message, deleted: 0 });
     }
 };

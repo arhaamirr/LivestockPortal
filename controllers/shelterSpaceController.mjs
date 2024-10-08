@@ -50,10 +50,22 @@ export const updateShelterSpace = async (req, res) => {
     try {
         const shelterSpace = await ShelterSpace.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!shelterSpace) {
-            return res.status(404).json({ message: 'shelterSpace not found' });
+            return res.status(404).json({ message: 'Shelter space not found' });
         }
         res.status(200).json(shelterSpace);
     } catch (error) {
         res.status(400).json({ error: error.message });
+    }
+};
+
+export const deleteShelterSpace = async (req, res) => {
+    try {
+        const shelterSpace = await ShelterSpace.findByIdAndDelete(req.params.id);
+        if (!shelterSpace) {
+            return res.status(404).json({ message: 'Shelter space not found', deleted: 0 });
+        }
+        res.status(200).json({ message: 'Shelter space deleted', deleted: 1 });
+    } catch (error) {
+        res.status(400).json({ error: error.message, deleted: 0 });
     }
 };
