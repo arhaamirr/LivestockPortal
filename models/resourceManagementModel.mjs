@@ -10,8 +10,13 @@ const resourceManagmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    feed: {
-        type: String,
+    feed_id: {
+        type    : mongoose.Schema.Types.ObjectId,
+        ref: 'FeedingRoutine',
+        required: true
+    },
+    animal_price: {
+        type: Number,
         required: true
     },
     user_id: {

@@ -13,7 +13,12 @@ export const addResource = async (req, res) => {
 
 export const getAllResources = async (req, res) => {
     try {
-        const resource = await ResourceManagment.find({}).populate("land_id");
+        const resource = await ResourceManagment.find({}).populate("land_id").populate({
+            path: 'feed_id',
+            populate: {
+              path: 'livestock_id',
+            }
+          });
         res.status(201).json(resource);
     } catch (error) {
         res.status(400).json({error: error.message});
@@ -23,7 +28,12 @@ export const getAllResources = async (req, res) => {
 export const getResourceById = async (req, res) => {
     console.log(req.params.id,"req.params.idreq.params.idreq.params.id")
     try {
-        const resource = await ResourceManagment.findById(req.params.id).populate('land_id');
+        const resource = await ResourceManagment.findById(req.params.id).populate('land_id').populate({
+            path: 'feed_id',
+            populate: {
+              path: 'livestock_id',
+            }
+          });
         if (!resource) {
             return res.status(404).json({ message: 'resource not found' });
         }
