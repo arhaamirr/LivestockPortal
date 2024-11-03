@@ -1,4 +1,5 @@
 import UserPurchase from "../models/userPurchase.mjs";
+import AddToCart from "../models/addToCart.mjs";
 import mongoose from "mongoose";
 
 export const getUserPurchasedItems = async (req, res) => {
@@ -22,18 +23,17 @@ export const getUserPurchasedItems = async (req, res) => {
 }
 
 export const purchaseItem = async (req, res) => {
-    const { user_id, shelter_id } = req.body;
+    const { user_id, shelter_id, quant, cart_id, live } = req.body;
     try {
-        const purchaseItem = await UserPurchase.find({shelterspace_id: shelter_id, user_id: user_id});
-        if(purchaseItem?.length > 0) {
-            res.status(200).json({message: "Item already purchased", purchased: 0});
-            return;
-        }
         const purchase = new UserPurchase({
             user_id: user_id,
-            shelterspace_id: shelter_id
+            shelterspace_id: shelter_id,
+            bought_quantity: quant
         });
         await purchase.save();
+
+        const deleted = await AddToCart.deleteOne({_id: new mongoose.Types.ObjectId(cart_id)});
+        console.log(deleted);
 
         res.status(200).json({message: "Item Purchased Successfully", purchased: 1});
     }

@@ -26,10 +26,14 @@ const doctorTimeslotRateSchema = new mongoose.Schema({
         type:  Number, 
         default: 0
    },
-   bookedBy: {
+   booked_by: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-   }
+   },
+   created_at: {
+     type: Date,
+     default: Date.now
+ }
 });
 
 const DoctorTimeSlotRates = mongoose.model('doctortimeslotrates', doctorTimeslotRateSchema);
