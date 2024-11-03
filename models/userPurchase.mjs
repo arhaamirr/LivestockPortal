@@ -10,6 +10,14 @@ const UserPurchaseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ShelterSpace',
         required: true
+    },
+    bought_quantity: {
+        type: String,
+        required: true
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
     }
 });
 

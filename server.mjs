@@ -6,7 +6,6 @@ import cors from "cors";
 import feedingRoutineRoutes from "./routes/feedingRoutineRoutes.mjs";
 import livestockRoutes from "./routes/livestockRoutes.mjs";
 import purchaseRoutes from "./routes/purchaseRoutes.mjs";
-import saleRoutes from "./routes/saleRoutes.mjs";
 import shelterRoutes from "./routes/shelterRoutes.mjs";
 import userRoutes from "./routes/userRoutes.mjs";
 import authMiddleware from "./middleware/authMiddleware.mjs";
@@ -16,6 +15,7 @@ import resourceManagementRoutes from "./routes/resourceManagementRoutes.mjs";
 import doctorTimeslotRateRoutes from "./routes/doctorTimeslotRateRoutes.mjs"
 import shelterSpaceRoutes from "./routes/shelterSpaceRoutes.mjs"
 import userPurchase from "./routes/userPurchase.mjs"
+import addToCart from "./routes/addToCartRoute.mjs"
 
 dotenv.config();
 
@@ -35,7 +35,6 @@ app.use(express.json());
 app.use("/feeding-routines", feedingRoutineRoutes);
 app.use("/livestock", livestockRoutes);
 app.use("/purchases", authMiddleware, purchaseRoutes);
-app.use("/sales", authMiddleware, saleRoutes);
 app.use("/shelters", shelterRoutes);
 app.use("/users", userRoutes);
 app.use("/housing-requirements", housingRequirementRoutes);
@@ -44,6 +43,7 @@ app.use("/resource", resourceManagementRoutes);
 app.use("/doctor", doctorTimeslotRateRoutes);
 app.use("/shelter-space", shelterSpaceRoutes);
 app.use("/user-purchase", userPurchase);
+app.use("/cart", addToCart);
 const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

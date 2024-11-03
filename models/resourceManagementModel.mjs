@@ -24,6 +24,10 @@ const resourceManagmentSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    created_at: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 const ResourceManagment = mongoose.model('resourceManagment', resourceManagmentSchema);

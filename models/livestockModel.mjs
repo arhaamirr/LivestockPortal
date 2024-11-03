@@ -24,7 +24,20 @@ const livestockSchema = new mongoose.Schema({
     },
     shelter_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Shelter'
+        ref: 'Shelter',
+        required: false
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true
+    },
+    rem_quantity: {
+        type: Number,
+        required: true
     },
     created_at: {
         type: Date,

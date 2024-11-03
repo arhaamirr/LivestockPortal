@@ -22,6 +22,10 @@ const feedingRoutineSchema = new mongoose.Schema({
     quantity: {
         type: Number,
         required: true
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
     }
 });
 

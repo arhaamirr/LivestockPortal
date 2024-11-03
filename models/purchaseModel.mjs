@@ -18,6 +18,10 @@ const purchaseSchema = new mongoose.Schema({
     price: {
         type: Number,
         required: true
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
     }
 });
 

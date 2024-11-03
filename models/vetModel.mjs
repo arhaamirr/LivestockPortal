@@ -5,7 +5,11 @@ const VeterinarySchema = new mongoose.Schema({
     contactNumber: { type: String, required: true },
     livestockType: { type: String, required: true },
     expectedDate: { type: Date, required: true },
-    address: { type: String, required: true }
+    address: { type: String, required: true },
+    created_at: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 const Veterinary = mongoose.model('Veterinary', VeterinarySchema);

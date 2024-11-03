@@ -18,6 +18,10 @@ const housingRequirementSchema = new mongoose.Schema({
     },
     ventilation: {
         type: String
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
     }
 });
 

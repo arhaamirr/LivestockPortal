@@ -1,24 +1,6 @@
 import DoctorTimeslotRate from "../models/doctorTimeslotRate.mjs"
 import mongoose from "mongoose";
 
-const formatDate = (dateString) => {
-    const date = new Date(dateString);
-  
-    // Format the day, month, and year
-    const day = date.getUTCDate();
-    const month = date.toLocaleString('default', { month: 'short' });
-    const year = date.getUTCFullYear();
-  
-    // Format the time
-    const time = date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true, // for AM/PM format
-    });
-  
-    return `${day}, ${month}, ${year} ${time}`;
-};
-
 export const createDoctorTimeslot = async (req, res) => {
     const { doctor_id, start_time, end_time, fee } = req.body;
 
@@ -122,7 +104,7 @@ export const bookAppointment = async (req, res) => {
     try {
         const response = await DoctorTimeslotRate.findOneAndUpdate(
             { _id: new mongoose.Types.ObjectId(timeslot_id), booked: 0 }, // Filter
-            { $set: { booked: 1, description: description, bookedBy: user_id } }, // Update
+            { $set: { booked: 1, description: description, booked_by: user_id } }, // Update
             { new: true }
           );
 
@@ -139,7 +121,7 @@ export const bookAppointment = async (req, res) => {
 export const getBookedTimeslotsUser = async (req, res) => {
     const { user_id } = req.params;
     try {
-        const response = await DoctorTimeslotRate.find({bookedBy: user_id, booked: 1}).populate("doctor_id").sort({ start_time: 1});
+        const response = await DoctorTimeslotRate.find({booked_by: user_id, booked: 1}).populate("doctor_id").sort({ start_time: 1});
         if (response) {
             res.status(200).json({ message: "Booked Timeslots fetched successfully", data: response });
         } else {
